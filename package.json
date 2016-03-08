@@ -1,0 +1,12 @@
+{
+  "name": "govintranet",
+  "version": "1.0.0",
+  "description": "Govintranet Wordpress Theme and Plugins",
+  "private": true,
+  "author": "HelpfulClients & Bang",
+  "license": "GPL",
+  "dependencies": {},
+  "devDependencies": {
+    "less": "2.5.3"
+  }
+}
