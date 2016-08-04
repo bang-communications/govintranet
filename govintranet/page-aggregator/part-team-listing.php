@@ -54,6 +54,9 @@
 		$chevron=1;
 		$user_query = new WP_User_Query(array('meta_query'=>array(array('key'=>'user_team','value'=>$tq,'compare'=>'LIKE'))));
 		foreach ($user_query->results as $u){ 
+			// belt and braces check to ensure $u is in $tq, ref:
+			// https://github.com/helpful/govintranet/issues/25
+			if (!in_array($tq, get_user_meta($u->ID, 'user_team', true))) continue;
 			$uid[] = $u->ID;
 			$ulastname[] = get_user_meta($u->ID,'last_name',true);
 			$uorder[] = intval(get_user_meta($u->ID,'user_order',true));
