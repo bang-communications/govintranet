@@ -5,7 +5,7 @@ Contributors: lukeoatham
 Link: https://intranetdiary.co.uk 
 Tags: intranet, gov.uk, responsive  
 Requires at least: 4.7  
-Tested up to: 4.9 
+Tested up to: 5.2 
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -32,11 +32,62 @@ Intranet theme inspired by GOV.UK. Custom post types: news, blog, events, tasks 
 ## Installation ##
 
 This theme requires the [Advanced Custom Fields Pro plugin](http://www.advancedcustomfields.com/pro) v5 to manage options and custom fields.  
-Tested up to: 5.6.5 
+Tested up to: 5.8
 Refer to [showcase site](http://demo.govintra.net/) for example intranet.  
 Refer to [Setup instructions](https://help.govintra.net/) for help and installation instructions. 
 
 ## Changelog ##
+
+### 4.39.10 - 28 August 2019 ###
+* Footer credits
+* A to Z listing improvements
+* Theme updater now works in child themes
+
+### 4.39.9 - 4 July 2019 ###
+* Bootstrap v3.4.1
+
+### 4.39.8.1 - 22 June 2019 ###
+* Updates on eventbrite booking form
+
+### 4.39.8 - 17 March 2019 ###
+* Bug fix on people shortcode, now correctly picks up the team slug
+
+### 4.39.7 - 24 January 2019 ###
+* Fix on non-Relevanssi staff search results to respect 'hide' flag
+
+### 4.39.6.1 - 30 December 2018 ###
+* First and last name display improvements on staff directory
+
+### 4.39.6 - 2 December 2018 ###
+* Accessibility improvements on staff directory
+
+### 4.39.5.2 - 18 November 2018 ###
+* Removed default login logo
+
+### 4.39.5.1 - 6 August 2018 ###
+* Custom colour tidy
+
+### 4.39.5 - 26 Jul 2018 ###
+* Dropped support for theme updates from non-SSL site 
+
+### 4.39.4.5 - 11 Apr 2018 ###
+* Fix for manuals in tasks, bug on last page of a guide 
+
+### 4.39.4.4 - 7 Apr 2018 ###
+* PHP warning fix for tag clouds 
+* PHP warning fix on single blog template 
+
+### 4.39.4.3 - 6 Apr 2018 ###
+* Change to show only published posts on author blog listing template 
+* Change to category templatle to allow for featured images 
+* Utility menu styling updates 
+* .docm added to automatic document icons 
+* Better formatting of content on aggregator template free-format element 
+* Task wide-page format improved to include manuals accordion 
+* Primary nav styling fix for indented menus 
+
+### 4.39.4.2 - 28 Mar 2018 ###
+* Link colour fixes (props: martinwrightgithub) 
 
 ### 4.39.4.1 - 26 Mar 2018 ###
 * Improved listing order on vacancies page template 

@@ -4,7 +4,7 @@ Plugin Name: HT Most recent
 Plugin URI: https://help.govintra.net
 Description: Widget to display most recent pages
 Author: Luke Oatham
-Version: 1.2.1
+Version: 1.3
 Author URI: https://www.agentodigital.com
 */
 
@@ -18,9 +18,9 @@ class htMostRecent extends WP_Widget {
 			array( 'description' => __( 'Display most recent posts' , 'govintranet') )
 		);   
 		
-		if( function_exists('register_field_group') ):
+		if( function_exists('acf_add_local_field_group') ):
 		
-		register_field_group(array (
+		acf_add_local_field_group(array (
 			'key' => 'group_54c30b1243bd6',
 			'title' => _x('Most recent widget','Widget that lists the most recent posts','govintranet'),
 			'fields' => array (
@@ -285,6 +285,4 @@ class htMostRecent extends WP_Widget {
 
 }
 
-add_action('widgets_init', create_function('', 'return register_widget("htMostRecent");'));
-
-?>
+add_action('widgets_init', function(){return register_widget("htMostRecent");});

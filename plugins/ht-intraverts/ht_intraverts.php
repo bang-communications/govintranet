@@ -4,7 +4,7 @@ Plugin Name: HT Intraverts
 Plugin URI: https://help.govintra.net
 Description: Display promotional adverts which register clicks
 Author: Luke Oatham
-Version: 1.4
+Version: 1.5
 Author URI: https://www.agentodigital.com
 */
 
@@ -69,10 +69,10 @@ class htIntraverts extends WP_Widget {
 		Register Advanced Custom Fields for the intraverts custom post type
 		*/
 		
-		if( function_exists('register_field_group') ):
+		if( function_exists('acf_add_local_field_group') ):
 		
 
-			register_field_group(array (
+			acf_add_local_field_group(array (
 				'key' => 'group_5494c172a5fb9',
 				'title' => 'Intraverts',
 				'fields' => array (
@@ -376,7 +376,7 @@ class htIntraverts extends WP_Widget {
 			Register Advanced Custom Fields for the intraverts widget
 			*/
 			
-			register_field_group(array (
+			acf_add_local_field_group(array (
 				'key' => 'group_54c2f059881dc',
 				'title' => __('Intraverts widget','govintranet'),
 				'fields' => array (
@@ -601,6 +601,4 @@ class htIntraverts extends WP_Widget {
     }
 }
 
-add_action('widgets_init', create_function('', 'return register_widget("htIntraverts");'));
-
-?>
+add_action('widgets_init', function(){return register_widget("htIntraverts");});

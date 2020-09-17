@@ -150,9 +150,17 @@ if ( have_posts() ) while ( have_posts() ) : the_post(); ?>
 						endif;
 						if (!$requestshow || (strtoupper($thisletter) == strtoupper($requestshow) ) ) {
 							if ($sort == 'last'){
-								$displayname = $u['lname'].", ".$u['fname'];
+								if ( $u['lname'] && $u['fname'] ){
+									$displayname = $u['lname'].", ".$u['fname'];	
+								} else {
+									$displayname = trim($u['lname']).trim($u['fname']);	
+								}
 							} else {
-								$displayname = $u['fname']." ".$u['lname'];
+								if ( $u['lname'] && $u['fname'] ){
+									$displayname = $u['fname']." ".$u['lname'];	
+								} else {
+									$displayname = trim($u['fname']).trim($u['lname']);	
+								}
 							} 
 							if ( ( ( isset( $usergrade['slug'] ) && $usergrade['slug'] == $grade ) && ( $grade ) ) || ( !$grade ) ) {
 								$gradedisplay='';
@@ -165,7 +173,7 @@ if ( have_posts() ) while ( have_posts() ) : the_post(); ?>
 								$avatarhtml = str_replace(" photo", " photo alignleft ".$avstyle, $avatarhtml);
 								if ($fulldetails){
 									$profile_url = gi_get_user_url($userid); 
-									$html .= "<div class='col-lg-4 col-md-6 col-sm-6 col-xs-12 pgrid-item'><div class='media well well-sm'><a href='".$profile_url."'>".$avatarhtml."</a><div class='media-body'><p><a href='".$profile_url."'><strong>".$displayname."</strong>".$gradedisplay."</a><br>";
+									$html .= "<div class='col-lg-4 col-md-6 col-sm-6 col-xs-12 pgrid-item'><div class='media well well-sm'><a href='".$profile_url."' aria-label='".esc_attr($displayname)."'>".$avatarhtml."</a><div class='media-body'><p><a href='".$profile_url."'><strong>".$displayname."</strong>".$gradedisplay."</a><br>";
 									// display team name(s)
 									$poduser = get_userdata($userid);
 									$team = get_user_meta($userid ,'user_team',true );
@@ -192,7 +200,7 @@ if ( have_posts() ) while ( have_posts() ) : the_post(); ?>
 									$avatarhtml = get_avatar($userid,66);
 									$avatarhtml = str_replace(" photo", " photo alignleft ".$avstyle, $avatarhtml);
 									$profile_url = gi_get_user_url($userid);
-									$html .= "<div class='col-lg-4 col-md-6 col-sm-6 col-xs-12 pgrid-item'><div class='indexcard'><a href='".$profile_url."'><div class='media'>".$avatarhtml."<div class='media-body'><strong>".$displayname."</strong>".$gradedisplay."<br>";
+									$html .= "<div class='col-lg-4 col-md-6 col-sm-6 col-xs-12 pgrid-item'><div class='indexcard'><a href='".$profile_url."' aria-label='".esc_attr($displayname)."'><div class='media'>".$avatarhtml."<div class='media-body'><strong>".$displayname."</strong>".$gradedisplay."<br>";
 									// display team name(s)
 									$team = get_user_meta($userid,'user_team',true);
 									if ($team){
@@ -223,9 +231,9 @@ if ( have_posts() ) while ( have_posts() ) : the_post(); ?>
 					<div class="input-group">
 						<div class="input-group-btn">
 						<?php if ($sort=="first") : ?>
-								<a class='btn btn-primary' href="<?php the_permalink(); ?>?sort=last&amp;show=<?php echo $requestshow ?>" aria-describedby="directory-sort"><?php _e('List by last name' , 'govintranet' ); ?></a>
+								<a class='btn btn-primary' href="<?php the_permalink(); ?>?sort=last&amp;show=<?php echo $requestshow ?>" aria-describedby="directory-sort"><?php _e('Switch to last name order' , 'govintranet' ); ?></a>
 						<?php else : ?>
-								<a class='btn btn-primary' href="<?php the_permalink(); ?>?sort=first&amp;show=<?php echo $requestshow ?>" aria-describedby="directory-sort"><?php _e('List by first name' , 'govintranet'); ?></a>
+								<a class='btn btn-primary' href="<?php the_permalink(); ?>?sort=first&amp;show=<?php echo $requestshow ?>" aria-describedby="directory-sort"><?php _e('Switch to first name order' , 'govintranet'); ?></a>
 						<?php endif; ?>
 						</div>
 					</div>

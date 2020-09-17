@@ -4,7 +4,7 @@ Plugin Name: HT Feature blogposts
 Plugin URI: https://help.govintra.net
 Description: Display blogposts
 Author: Luke Oatham
-Version: 1.5
+Version: 1.6
 Author URI: https://www.agentodigital.com
 
 */
@@ -171,7 +171,9 @@ class htFeatureBlogposts extends WP_Widget {
 		$k = -1;
 		$alreadydone = array();
 		$titledone = 0;
-
+		$directorystyle = get_option('options_staff_directory_style'); // 0 = squares, 1 = circles
+		$avstyle = "";
+		if ( $directorystyle==1 ) $avstyle = " img-circle ";
 		$blogstransient = $widget_id;
 		$html = "";
 		if ( $cache > 0 ) $html = get_transient( $blogstransient );
@@ -202,11 +204,11 @@ class htFeatureBlogposts extends WP_Widget {
 					$edate = date(get_option('date_format'),strtotime($edate));
 					$thisURL = get_permalink();
 					$html.= "<div class='media'>";
-					if ($thumbnails){echo "x";
+					if ($thumbnails){
 						$image_uri =  wp_get_attachment_image_src( get_post_thumbnail_id( ), 'thumbnail' ); 
 						if (!$image_uri || $forceavatar){
-							$image_uri = get_avatar(get_the_author_meta('ID'),72);
-							$image_uri = str_replace("alignleft", "alignleft tinyblogthumb", $image_uri);
+							$image_uri = get_avatar(get_the_author_id() , 72, "", get_user_meta( get_the_author_id(), 'display_name', true), array('class'=>$avstyle));
+							$image_uri = str_replace("avatar ", "avatar ".$avstyle, $image_uri);
 							$html.= "<a class='pull-left' href='".get_permalink(get_the_id())."'>{$image_uri}</a>";		
 						} else {
 							$html.= "<a class='pull-left' href='".get_permalink(get_the_id())."'><img class='tinyblogthumb alignleft' src='{$image_uri[0]}' alt='".esc_attr($thistitle)."' /></a>";					}
@@ -248,8 +250,6 @@ class htFeatureBlogposts extends WP_Widget {
 					    'terms' => (array)$blog_categories,
 					    'compare' => "IN",
 				    ));
-
-			
 	
 			$blogs = new WP_Query($cquery);
 			if ($blogs->post_count!=0 && !$titledone ) {
@@ -278,8 +278,8 @@ class htFeatureBlogposts extends WP_Widget {
 				if ($thumbnails){
 					$image_uri =  wp_get_attachment_image_src( get_post_thumbnail_id( ), 'thumbnail' ); 
 					if (!$image_uri || $forceavatar){
-						$image_uri = get_avatar(get_the_author_meta('ID'),72);
-						$image_uri = str_replace("alignleft", "alignleft tinyblogthumb", $image_uri);
+						$image_uri = get_avatar($post->post_author , 72, "", get_user_meta( $post->post_author, 'display_name', true), array('class'=>$avstyle));
+						$image_uri = str_replace("avatar ", "avatar ".$avstyle, $image_uri);
 						$html.= "<a class='pull-left' href='".get_permalink()."'>{$image_uri}</a>";		
 					} else {
 						$html.= "<a class='pull-left' href='".get_permalink()."'><img class='tinyblogthumb alignleft' src='{$image_uri[0]}' alt='".esc_attr($thistitle)."' /></a>";						
@@ -297,7 +297,8 @@ class htFeatureBlogposts extends WP_Widget {
 				if ($excerpt == 'on') $html.=wpautop(get_the_excerpt());
 				$html.= "</div></div><hr class='light'>";
 			}
-			if ($blogs->have_posts() && $more){
+			if ( $more && ( $num_top_slots || $blogs->have_posts() ) ) {
+
 				$landingpage = get_option('options_module_blog_page'); 
 				if ( !$landingpage ):
 					$landingpage_link_text = 'blogposts';
@@ -305,8 +306,13 @@ class htFeatureBlogposts extends WP_Widget {
 					$landingpage = site_url().'/blogposts/';
 				else:
 					$landingpage_link_text = get_the_title( $landingpage[0] );
-				if ( $moretitle ) $landingpage_link_text = $moretitle;
+					if ( $moretitle ) $landingpage_link_text = $moretitle;
 					$landingpage = get_permalink( $landingpage[0] );
+				endif;
+				
+				if ( is_array($blog_categories) && count($blog_categories) < 2 ): 
+					$term = intval($blog_categories[0]); 
+					$landingpage = get_term_link($term, 'blog-category'); 
 				endif;
 				
 				$html.= '<p><strong><a title="' . $landingpage_link_text . '" class="small" href="'.$landingpage.'">'.$landingpage_link_text.'</a></strong> <span class="dashicons dashicons-arrow-right-alt2"></span></p>';
@@ -370,6 +376,4 @@ class htFeatureBlogposts extends WP_Widget {
     }
 }
 
-add_action('widgets_init', create_function('', 'return register_widget("htFeatureBlogposts");'));
-
-?>
+add_action('widgets_init', function(){return register_widget("htFeatureBlogposts");});

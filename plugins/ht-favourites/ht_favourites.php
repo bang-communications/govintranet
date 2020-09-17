@@ -4,7 +4,7 @@ Plugin Name: HT Favourites
 Plugin URI: https://help.govintra.net
 Description: Manage favourites in staff profiles
 Author: Luke Oatham
-Version: 1.1.1
+Version: 1.3
 Author URI: https://www.agentodigital.com
 */
 
@@ -140,8 +140,8 @@ class htfavourites_display extends WP_Widget {
     }
 }
 
-add_action('widgets_init', create_function('', 'return register_widget("htfavourites_add");'));
-add_action('widgets_init', create_function('', 'return register_widget("htfavourites_display");'));
+add_action('widgets_init', function(){return register_widget("htfavourites_add");});
+add_action('widgets_init', function(){return register_widget("htfavourites_display");});
 add_action( 'wp_ajax_ht_favourites_ajax_add', 'ht_favourites_ajax_add' );
 add_action( 'wp_ajax_nopriv_ht_favourites_ajax_add', 'ht_favourites_ajax_add' );
 
@@ -280,7 +280,11 @@ function ht_favourites_ajax_action_add() {
 		    $html =  __("Security check - can\'t check your identity","govintranet") ; 	
 		} else {
 			$faves = get_user_meta($user_id, 'user_favourites', true);
-			if ( isset($faves) && !in_array($post_id, (array)$faves ) ) $faves[] = $post_id;
+			if ( isset($faves) && !in_array($post_id, (array)$faves ) ) {
+				$faves[] = $post_id;
+			} elseif ( !$faves ) {
+				$faves = array($post_id);
+			}
 		    update_user_meta($current_user_id,'user_favourites', $faves); 
 			$html = '<div class="ht_addtofav btn btn-sm btn-primary">' . __('Added','govintranet') . '</div>';
 			$success = true;

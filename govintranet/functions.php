@@ -144,8 +144,7 @@ add_action("init","govintranet_theme_check");
 function govintranet_theme_check(){
 	//Initialize the update checker.
 	require 'theme-updates/theme-update-checker.php';
-	$latest_feed = 'http://demo.govintra.net/auto-updates/info.json';
-	if ( is_ssl() ) $latest_feed = 'https://help.govintra.net/auto-updates/info.json';
+	$latest_feed = 'https://help.govintra.net/auto-updates/info.json';
 	$govintranet_update_checker = new ThemeUpdateChecker(
 	    'govintranet',
 	    $latest_feed
@@ -397,6 +396,15 @@ function govintranet_comment( $comment, $args, $depth ) {
 endif;
 
 add_filter('comment_flood_filter', '__return_false');
+
+// Admin footer modification
+
+function remove_footer_admin () {
+	$my_theme = wp_get_theme('govintranet');
+	$theme_version = $my_theme->get('Version');
+    echo '<span id="footer-thankyou">GovIntranet ' . $theme_version . ' by <a href="https://www.agentodigital.com/" target="_blank">Agento Digital</a></span>';
+}
+add_filter('admin_footer_text', 'remove_footer_admin');
 
 /**
  * Register widgetized areas, including two sidebars and four widget-ready columns in the footer.
@@ -664,8 +672,16 @@ function add_mtc_post_types( $types )
 add_filter( 'rd2_mtc_post_types', 'add_mtc_post_types' );
 
 function get_post_thumbnail_caption() {
-	if ( $thumb = get_post_thumbnail_id() )
-		return get_post( $thumb )->post_excerpt;
+	global $post;
+	$thumb = get_post_thumbnail_id();
+	if ( $thumb ) {
+		$thumb_post = get_post( $thumb );
+		if ( isset( $thumb_post ) ){
+		return esc_html($thumb_post->post_excerpt);
+		} else {
+		return "";	
+		}
+	}
 }
 
 /* Register callback function for post_thumbnail_html filter hook */
@@ -786,22 +802,15 @@ function postHasChildren($id,$type) {
 function my_custom_login_logo() {
 	$hc = "options_login_logo";
 	$hcitem = get_option($hc);
-	$loginimage =  wp_get_attachment_image_src( $hcitem, 'large' );
 	if ($hcitem){
-    echo '<style type="text/css">
+		$loginimage =  wp_get_attachment_image_src( $hcitem, 'large' );
+		echo '<style type="text/css">
            h1 a { background-image:url('.$loginimage[0].') !important; 
            width: auto !important;
            background-size: auto !important;
            }
     </style>';
-    } else {
-    echo '<style type="text/css">
-	h1 a { background-image:url('.get_template_directory_uri().'/images/loginbranding.png) !important; 
-	       width: auto !important;
-           background-size: auto !important;
-           }
-    </style>';
-    }
+    } 
 }
 add_action('login_head', 'my_custom_login_logo');
 
@@ -10259,7 +10268,7 @@ function ht_people_shortcode($atts){
     $opts=shortcode_atts( array(
         'id' => '',
         'team' => '',
-        'num' => 3,
+        'num' => -1,
         ), $atts );
 	
 	$userid = $opts['id'];
@@ -10269,7 +10278,7 @@ function ht_people_shortcode($atts){
 	$html = '';
 	
 	if ( $team ) {
-		$t = get_posts( array('post_type'=>'team','post_name'=>$team,'post_status'=>'publish') );
+		$t = get_posts( array('post_type'=>'team','name'=>$team,'post_status'=>'publish') );
 		if ( $t ) $teamid = $t[0]->ID; 
 	}
 
@@ -10445,7 +10454,7 @@ function gi_tag_cloud($taxonomy, $term, $post_type) {
 	$alltags = array();
 	if ( $posts->have_posts() ) while ($posts->have_posts()){
 	$posts->the_post();
-		$tags = get_the_tags($id);
+		$tags = get_the_tags($posts->ID);
 		if ( $tags ) foreach ($tags as $t){
 			if (isset($alltags[$t->slug]['count'])){
 				$alltags[$t->slug]['count']++;
@@ -10490,7 +10499,7 @@ function gi_howto_tag_cloud($posttype) {
 	$alltags = array();
 	if ( $posts->have_posts() ) while ($posts->have_posts()): 
 	$posts->the_post();
-		$tags = get_the_tags($p->ID); 
+		$tags = get_the_tags($posts->ID); 
 		if ( $tags ) foreach ((array)$tags as $t):
 			if ( !isset( $alltags[$t->slug]['count'] ) ):
 				$alltags[$t->slug]['count'] = 1;
@@ -10861,8 +10870,8 @@ function govintranet_custom_styles() {
 	
 	// write custom css for background header colour
 
-	$bg = get_theme_mod('link_color', '#428bca');
-	$bg = get_theme_mod('link_visited_color', '#7303aa');
+	$link_color = get_theme_mod('link_color', '#428bca');
+	$link_visited_color = get_theme_mod('link_visited_color', '#7303aa');
 	$headtext = get_theme_mod('header_textcolor', '#ffffff'); if ( substr($headtext, 0 , 1 ) != "#") $headtext="#".$headtext;
 	$headimage = get_theme_mod('header_image', '');
 	$custom_logo_id = get_theme_mod( 'custom_logo' );
@@ -10883,9 +10892,9 @@ function govintranet_custom_styles() {
 		 $giscc = $gishex; 
 	endif;
 
-	$custom_css.= "a, a .listglyph  {color: ".$bg.";}";
+	$custom_css.= "a, a .listglyph  {color: ".$link_color.";}";
 	$custom_css.= "a:visited.btn.btn-primary, a:link.btn.btn-primary {color:".$btn_text.";}";
-	$custom_css.= "a:visited, a:visited .listglyph {color: ".$bg.";}";
+	$custom_css.= "a:visited, a:visited .listglyph {color: ".$link_visited_color.";}";
 	if ($headimage != 'remove-header' ):
 		$custom_css.= "#topstrip  {	background: ".$gishex." url(".get_header_image()."); color: ".$headtext.";	}";
 	else:
@@ -10898,10 +10907,10 @@ function govintranet_custom_styles() {
 		#primarynav ul li a:hover {color: ".$gishex." !important; background: ".$headtext."; }	
 	}";
 	$custom_css.= ".btn-primary, .btn-primary a, #commentform #submit  { background: ".$giscc."; border: 1px solid ".$giscc."; color: ".$btn_text."; } ";
-	$custom_css.= "#utilitybar ul#menu-utilities li {border-right:1px solid ".$btn_text.";}";
+	$custom_css.= "#utilitybar ul.menu li {border-right:1px solid ".$btn_text.";}";
 	$custom_css.= ".btn-primary a:hover  { background: ".$gishex."; } ";
 	$custom_css.= "#topstrip a { color: ".$headtext."; }";
-	$custom_css.= "#utilitybar ul#menu-utilities li a, #menu-utilities { color: ".$headtext."; } ";
+	$custom_css.= "#utilitybar ul.menu li a { color: ".$headtext."; } ";
 	$custom_css.= "#footerwrapper  {border-top: ".$gisheight."px solid ".$giscc.";}";
 	$custom_css.= ".page-template-page-about-php .category-block h2 {border-top: ".$gisheight."px solid ".$giscc."; padding: 0.6em 0; }";
 	$custom_css.= ".h3border { border-bottom: 3px solid ".$gishex.";}";
@@ -10932,12 +10941,13 @@ function govintranet_custom_styles() {
 	#primarynav ul li:first-child  {	border-left: 1px solid ".$gishex.";	}
 	#searchformdiv button:hover { background: ".$gishex."; color: ".$btn_text."; }";		
 	$custom_css.= "a.wptag {color: ".$btn_text."; background: ".$gishex.";} \n";
-	if ($headimage != 'remove-header' && $headimage) $custom_css.= '#utilitybar ul#menu-utilities li a, #menu-utilities, #crownlink { text-shadow: 1px 1px #333; }'; 
+	if ($headimage != 'remove-header' && $headimage) $custom_css.= '#utilitybar ul.menu li a, #crownlink { text-shadow: 1px 1px #333; }'; 
 	
 	//write css for category colours
 	$terms = get_terms('category',array('hide_empty'=>false));
 	if ($terms) {
   		foreach ((array)$terms as $taxonomy ) {
+	  		if ( $taxonomy->term_id < 2 ) continue;
   		    $themeid = $taxonomy->term_id;
   		    $themeURL= $taxonomy->slug;
 			if ( version_compare( get_option('acf_version','1.0'), '5.5', '>' ) && function_exists('get_term_meta') ):
